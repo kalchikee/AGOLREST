@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ArcGIS JS Map App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="" />
+  <!-- ArcGIS JS API CDN links -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.25/"></script>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+  <script>
+    require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/BasemapGallery", "esri/widgets/Locate", "esri/widgets/Search"], function(esriConfig, Map, MapView, BasemapGallery, Locate, Search) {
+      // Set your API key here
+      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurCu2TH84b2JPXGHcpnrENGUlsKXUHky6dWw4HwNY493BGC3jQnT6AFdaqj7qG5tv7RwUH_-CdHtMWqpkhPEzk2s---iBbEUCKI3UYkLu7XLHQqdmRdXhNzqmvg2M0pc2Ld_gyEJbpJgK66Q1C03TRR1t8n25_Ki8TnZ8JVl76He10k5pMQnOqcVquCKx3EHK2WqgPvFGv_ednLy8EkNtjiKZ31xYQKTwf5GfEKsyDovwAT1_cEtGWuo6";
+      const map = new Map({
+        basemap: "satellite" // Try "streets", "hybrid", "dark-gray", "gray", "national-geographic", "osm", etc.
+      });
+      const view = new MapView({
+        map: map,
+        center: [-87.6298, 41.8781], // Chicago, IL (longitude, latitude)
+        scale: 50000, // City scale (adjust as needed)
+        container: "viewDiv"
+      });
+
+      const basemapGallery = new BasemapGallery({
+        view: view // Standard basemap gallery for user interaction
+      });
+      view.ui.add(basemapGallery, "top-right");
+
+      // Challenge 4: Locate Button
+      const locateWidget = new Locate({
+        view: view
+      });
+      view.ui.add(locateWidget, "top-left");
+
+      // Challenge 5: Search Bar
+      const searchWidget = new Search({
+        view: view
+      });
+      view.ui.add(searchWidget, "top-left");
+    });
+  </script>
+</body>
+</html>
