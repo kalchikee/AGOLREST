@@ -35,7 +35,7 @@
       // Set your API key here
       esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
       const map = new Map({
-        basemap: "arcgis-topographic"
+        basemap: "streets"
       });
       const view = new MapView({
         map: map,
@@ -230,7 +230,7 @@
         }
       };
       const heliportLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports_Lab_2/FeatureServer",
         renderer: heliportRenderer,
         definitionExpression: "Fac_Type = 'HELIPORT'",
         labelingInfo: [heliportLabels]
