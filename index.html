@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,18 +25,18 @@
       "esri/config",
       "esri/Map",
       "esri/views/MapView",
-      "esri/widgets/BasemapGallery",
+  // "esri/widgets/BasemapGallery", // Removed BasemapGallery
       "esri/widgets/Locate",
       "esri/widgets/Search",
       "esri/Graphic",
       "esri/layers/GraphicsLayer",
       "esri/layers/FeatureLayer",
       "esri/widgets/Expand"
-    ], function(esriConfig, Map, MapView, BasemapGallery, Locate, Search, Graphic, GraphicsLayer, FeatureLayer, Expand) {
+  ], function(esriConfig, Map, MapView, /*BasemapGallery,*/ Locate, Search, Graphic, GraphicsLayer, FeatureLayer, Expand) {
       // Set your API key here
       esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
       const map = new Map({
-        basemap: "streets"
+        basemap: "streets-vector" // Updated to use supported basemap
       });
       const view = new MapView({
         map: map,
@@ -237,20 +238,15 @@
       });
       map.add(heliportLayer);
 
-      // ...existing code for widgets...
-      const basemapGalleryWidget = new BasemapGallery({ view: view });
-      view.ui.add(basemapGalleryWidget, "top-right");
+  // ...existing code for widgets...
+  // BasemapGallery removed
       const locateWidget = new Locate({ view: view });
       view.ui.add(locateWidget, "top-left");
       const searchWidget = new Search({ view: view });
       view.ui.add(searchWidget, "top-left");
 
-      // Optionally, add Expand for BasemapGallery if desired
-      // const bgExpand = new Expand({
-      //   view: view,
-      //   content: basemapGalleryWidget
-      // });
-      // view.ui.add(bgExpand, "top-right");
+  // Optionally, add Expand for BasemapGallery if desired
+  // BasemapGallery references removed
     });
   </script>
 </body>
