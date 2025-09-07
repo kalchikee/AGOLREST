@@ -29,19 +29,19 @@
       "esri/widgets/Search",
       "esri/Graphic",
       "esri/layers/GraphicsLayer",
-      "esri/layers/FeatureLayer"
-
-    ], function(esriConfig, Map, MapView, BasemapGallery, Locate, Search, Graphic, GraphicsLayer, FeatureLayer) {
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Expand"
+    ], function(esriConfig, Map, MapView, BasemapGallery, Locate, Search, Graphic, GraphicsLayer, FeatureLayer, Expand) {
       // Set your API key here
       esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
       const map = new Map({
         basemap: "arcgis-topographic"
       });
       const view = new MapView({
-    map: map,
-    center: [-96.7970, 32.7767], // Centered on Dallas, TX
-    scale: 100000,
-    container: "viewDiv"
+        map: map,
+        center: [-87.6298, 41.8781], // Centered on Chicago, IL
+        scale: 100000,
+        container: "viewDiv"
       });
 
       // Add GraphicsLayer to the map
@@ -238,12 +238,19 @@
       map.add(heliportLayer);
 
       // ...existing code for widgets...
-      const basemapGallery = new BasemapGallery({ view: view });
-      view.ui.add(basemapGallery, "top-right");
+      const basemapGalleryWidget = new BasemapGallery({ view: view });
+      view.ui.add(basemapGalleryWidget, "top-right");
       const locateWidget = new Locate({ view: view });
       view.ui.add(locateWidget, "top-left");
       const searchWidget = new Search({ view: view });
       view.ui.add(searchWidget, "top-left");
+
+      // Optionally, add Expand for BasemapGallery if desired
+      // const bgExpand = new Expand({
+      //   view: view,
+      //   content: basemapGalleryWidget
+      // });
+      // view.ui.add(bgExpand, "top-right");
     });
   </script>
 </body>
