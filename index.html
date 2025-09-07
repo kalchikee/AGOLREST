@@ -20,34 +20,167 @@
 <body>
   <div id="viewDiv"></div>
   <script>
-    require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/BasemapGallery", "esri/widgets/Locate", "esri/widgets/Search"], function(esriConfig, Map, MapView, BasemapGallery, Locate, Search) {
+    require([
+      "esri/config",
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/Locate",
+      "esri/widgets/Search",
+      "esri/Graphic",
+      "esri/layers/GraphicsLayer",
+      "esri/layers/FeatureLayer"
+
+    ], function(esriConfig, Map, MapView, BasemapGallery, Locate, Search, Graphic, GraphicsLayer, FeatureLayer) {
       // Set your API key here
-      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurCu2TH84b2JPXGHcpnrENGUlsKXUHky6dWw4HwNY493BGC3jQnT6AFdaqj7qG5tv7RwUH_-CdHtMWqpkhPEzk2s---iBbEUCKI3UYkLu7XLHQqdmRdXhNzqmvg2M0pc2Ld_gyEJbpJgK66Q1C03TRR1t8n25_Ki8TnZ8JVl76He10k5pMQnOqcVquCKx3EHK2WqgPvFGv_ednLy8EkNtjiKZ31xYQKTwf5GfEKsyDovwAT1_cEtGWuo6";
+      esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
       const map = new Map({
-        basemap: "satellite" // Try "streets", "hybrid", "dark-gray", "gray", "national-geographic", "osm", etc.
+        basemap: "arcgis-topographic"
       });
       const view = new MapView({
         map: map,
-        center: [-87.6298, 41.8781], // Chicago, IL (longitude, latitude)
-        scale: 50000, // City scale (adjust as needed)
+        center: [-97.750689, 30.263098], // Centered on Austin
+        scale: 50000,
         container: "viewDiv"
       });
 
-      const basemapGallery = new BasemapGallery({
-        view: view // Standard basemap gallery for user interaction
+      // Add GraphicsLayer to the map
+      const graphicsLayer = new GraphicsLayer();
+      map.add(graphicsLayer);
+
+      // Point, polyline, polygon code ...existing code...
+      // 1. Create a point geometry for Stevie Ray Vaughan Statue
+      const point = {
+        type: "point",
+        longitude: -97.750689,
+        latitude: 30.263098
+      };
+      const simpleMarkerSymbol = {
+        type: "simple-marker",
+        style: "diamond",
+        color: [0, 0, 139],
+        outline: { color: [255, 255, 255], width: 1 }
+      };
+      const popupTemplate = {
+        title: "{Name}",
+        content: "{Description}"
+      };
+      const attributes = {
+        Name: "Stevie Ray Vaughan Statue",
+        Description: "A bronze sculpture of Stevie Ray Vaughan by Ralph Helmick"
+      };
+      const pointGraphic = new Graphic({ geometry: point, symbol: simpleMarkerSymbol, attributes: attributes, popupTemplate: popupTemplate });
+      graphicsLayer.add(pointGraphic);
+      // Polyline
+      const polyline = {
+        type: "polyline",
+        paths: [[[-97.750689, 30.263098], [-97.748, 30.265], [-97.746, 30.264]]]
+      };
+      const polylineSymbol = { type: "simple-line", color: [255, 0, 0], width: 2 };
+      const polylineGraphic = new Graphic({ geometry: polyline, symbol: polylineSymbol, attributes: { Name: "Sample Polyline", Description: "A polyline near the statue." }, popupTemplate: { title: "{Name}", content: "{Description}" } });
+      graphicsLayer.add(polylineGraphic);
+      // Polygon
+      const polygon = {
+        type: "polygon",
+        rings: [[[-97.751, 30.263], [-97.751, 30.264], [-97.749, 30.264], [-97.749, 30.263], [-97.751, 30.263]]]
+      };
+      const polygonSymbol = { type: "simple-fill", color: [0, 255, 255, 0.3], outline: { color: [0, 0, 0], width: 1 } };
+      const polygonGraphic = new Graphic({ geometry: polygon, symbol: polygonSymbol, attributes: { Name: "Sample Polygon", Description: "A polygon near the statue." }, popupTemplate: { title: "{Name}", content: "{Description}" } });
+      graphicsLayer.add(polygonGraphic);
+
+      // Add Colleges and Universities FeatureLayer from AGOL
+      // Define a pop-up for usaeduLayer
+      const popupEduusa = {
+        title: "EDUs",
+        content: "<b>Name:</b> {NAME}<br><b>Total Enrollment:</b> {TOT_ENROLL}<br>"
+      };
+
+      // Add the Colleges and Universities FeatureLayer from AGOL
+      const usaeduLayer = new FeatureLayer({
+      url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer"
       });
+      map.add(usaeduLayer);
+
+      // Airport icon renderer
+      const airportRenderer = {
+        type: "simple",
+        symbol: {
+          type: "picture-marker",
+          url: "https://sounny.github.io/agol/outline_local_airport_black_24dp.png",
+          width: "18px",
+          height: "18px"
+        }
+      };
+      // Airport label renderer
+      const airportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#5E8D74",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name"
+        }
+      };
+      // Add US Airports FeatureLayer with custom renderer, filter, and labels
+      const airportLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
+        renderer: airportRenderer,
+        definitionExpression: "Fac_Type = 'AIRPORT'",
+        labelingInfo: [airportLabels]
+      });
+      map.add(airportLayer);
+
+      // Challenge 5: Add heliport layer with helicopter icon
+      const heliportRenderer = {
+        type: "simple",
+        symbol: {
+          type: "picture-marker",
+          url: "https://upload.wikimedia.org/wikipedia/commons/6/6b/Helicopter_icon.png", // Example helicopter icon
+          width: "18px",
+          height: "18px"
+        }
+      };
+      const heliportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFD700",
+          haloColor: "#333333",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name"
+        }
+      };
+      const heliportLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
+        renderer: heliportRenderer,
+        definitionExpression: "Fac_Type = 'HELIPORT'",
+        labelingInfo: [heliportLabels]
+      });
+      map.add(heliportLayer);
+
+      // ...existing code for widgets...
+      const basemapGallery = new BasemapGallery({ view: view });
       view.ui.add(basemapGallery, "top-right");
-
-      // Challenge 4: Locate Button
-      const locateWidget = new Locate({
-        view: view
-      });
+      const locateWidget = new Locate({ view: view });
       view.ui.add(locateWidget, "top-left");
-
-      // Challenge 5: Search Bar
-      const searchWidget = new Search({
-        view: view
-      });
+      const searchWidget = new Search({ view: view });
       view.ui.add(searchWidget, "top-left");
     });
   </script>
