@@ -38,10 +38,10 @@
         basemap: "arcgis-topographic"
       });
       const view = new MapView({
-        map: map,
-        center: [-97.750689, 30.263098], // Centered on Austin
-        scale: 50000,
-        container: "viewDiv"
+    map: map,
+    center: [-96.7970, 32.7767], // Centered on Dallas, TX
+    scale: 100000,
+    container: "viewDiv"
       });
 
       // Add GraphicsLayer to the map
@@ -92,14 +92,76 @@
       // Define a pop-up for usaeduLayer
       const popupEduusa = {
         title: "EDUs",
-        content: "<b>Name:</b> {NAME}<br><b>Total Enrollment:</b> {TOT_ENROLL}<br>"
+        content: "<b>Name:</b> {INSTNM}<br><b>Total Enrollment:</b> {INSTSIZE}<br>"
       };
 
       // Add the Colleges and Universities FeatureLayer from AGOL
-      const usaeduLayer = new FeatureLayer({
-      url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer"
-      });
-      map.add(usaeduLayer);
+        // Custom renderer for colored squares
+        // Unique-value renderer for type of institution
+        // Renderer based on keywords in INSTNM (title)
+        // Renderer based on LEVEL field (Level of institution)
+        const eduRenderer = {
+          type: "unique-value",
+          field: null,
+          defaultSymbol: {
+            type: "simple-marker",
+            style: "square",
+            color: [200, 200, 200, 0.8],
+            size: 12,
+            outline: { color: [0,0,0,0.5], width: 1 }
+          },
+          uniqueValueInfos: [
+            {
+              value: "1",
+              symbol: {
+                type: "simple-marker",
+                style: "square",
+                color: [255, 140, 0, 0.8], // orange
+                size: 12,
+                outline: { color: [0,0,0,0.5], width: 1 }
+              },
+              label: "<2 years"
+            },
+            {
+              value: "2",
+              symbol: {
+                type: "simple-marker",
+                style: "square",
+                color: [128, 0, 128, 0.8], // purple
+                size: 12,
+                outline: { color: [0,0,0,0.5], width: 1 }
+              },
+              label: "2-4 years"
+            },
+            {
+              value: "3",
+              symbol: {
+                type: "simple-marker",
+                style: "square",
+                color: [173, 216, 230, 0.8], // light blue
+                size: 12,
+                outline: { color: [0,0,0,0.5], width: 1 }
+              },
+              label: ">=4 years"
+            }
+          ],
+          valueExpression: `
+            When(
+              $feature.ICLEVEL == 1, '1',
+              $feature.ICLEVEL == 2, '2',
+              $feature.ICLEVEL == 3, '3',
+              null
+            )
+          `
+        };
+
+        const usaeduLayer = new FeatureLayer({
+          url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
+          outFields: ["INSTNM", "INSTSIZE", "ICLEVEL"],
+          popupTemplate: popupEduusa,
+          renderer: eduRenderer
+        });
+        map.add(usaeduLayer);
 
       // Airport icon renderer
       const airportRenderer = {
@@ -144,9 +206,9 @@
         type: "simple",
         symbol: {
           type: "picture-marker",
-          url: "https://upload.wikimedia.org/wikipedia/commons/6/6b/Helicopter_icon.png", // Example helicopter icon
-          width: "18px",
-          height: "18px"
+          url: "https://raw.githubusercontent.com/kalchikee/agol/main/Daco_5587574.png",
+          width: "24px",
+          height: "24px"
         }
       };
       const heliportLabels = {
