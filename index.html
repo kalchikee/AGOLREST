@@ -240,11 +240,49 @@
       map.add(heliportLayer);
 
 
+
+
+      // Challenge 1: Change the symbol for myAirports layer to a green vector marker
+      const myAirportRenderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          style: "diamond",
+          color: [0, 200, 0, 0.5], // green, 50% transparent
+          size: 16,
+          outline: {
+            color: [0, 100, 0, 1],
+            width: 2
+          }
+        }
+      };
+
+      // Challenge 2: Add a label to myAirports showing the Airport code
+      const myAirportLabels = {
+        symbol: {
+          type: "text",
+          color: "#333333",
+          haloColor: "#FFFFFF",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "bold"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.AirportCode"
+        }
+      };
+
       //adding the const for the feature layer
       const myAirports = new FeatureLayer({
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/My_Airports_AGOLREST/FeatureServer",
-        //adding the popup here
         outFields: ["AirportCode"],
+        renderer: myAirportRenderer,
+        labelingInfo: [myAirportLabels]
       });
 
       //adding the feature layer to the map
@@ -263,8 +301,23 @@
 
         // Add the widget to the view
         view.ui.add(editor, "top-right");
-  // ...existing code for widgets...
-  // BasemapGallery removed
+
+      // Challenge 3: Add Legend widget
+      require(["esri/widgets/Legend"], function(Legend) {
+        const legend = new Legend({
+          view: view,
+          layerInfos: [
+            { layer: myAirports, title: "My Airports" },
+            { layer: airportLayer, title: "US Airports" },
+            { layer: heliportLayer, title: "Heliports" },
+            { layer: usaeduLayer, title: "Colleges & Universities" }
+          ]
+        });
+        view.ui.add(legend, "bottom-left");
+      });
+
+      // ...existing code for widgets...
+      // BasemapGallery removed
       const locateWidget = new Locate({ view: view });
       view.ui.add(locateWidget, "top-left");
       const searchWidget = new Search({ view: view });
