@@ -31,8 +31,9 @@
       "esri/Graphic",
       "esri/layers/GraphicsLayer",
       "esri/layers/FeatureLayer",
-      "esri/widgets/Expand"
-  ], function(esriConfig, Map, MapView, /*BasemapGallery,*/ Locate, Search, Graphic, GraphicsLayer, FeatureLayer, Expand) {
+      "esri/widgets/Expand",
+      "esri/widgets/Editor"
+  ], function(esriConfig, Map, MapView, /*BasemapGallery,*/ Locate, Search, Graphic, GraphicsLayer, FeatureLayer, Expand, Editor) {
       // Set your API key here
       esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurCu2TH84b2JPXGHcpnrENGUlsKXUHky6dWw4HwNY493B2sdNFwDufpQR7PTEabYhLGhkcsfcKECfS-KlprUPLK6MJRSu9zih8ESeET2uI7MnsCH3fciLqtc9eU4MjWi_6Xo4cyQ3af-6d4rkbT8PUt8bjoUef6w13Yi-5y4tvn_H4jnSlVB1OJ7dl9CSv77WBSWg-qGxrZkikMetOHdAMprXPKDw-zu5GUUkmyHl3unGAT1_cEtGWuo6";
       const map = new Map({
@@ -238,6 +239,30 @@
       });
       map.add(heliportLayer);
 
+
+      //adding the const for the feature layer
+      const myAirports = new FeatureLayer({
+        url: "YOUR URL HERE",
+        //adding the popup here
+        outFields: ["AirportCode"],
+      });
+
+      //adding the feature layer to the map
+      map.add(myAirports);
+
+        // Set the point layer's LayerInfo
+        const pointInfos = {
+          layer: myAirports
+        };
+
+        // Begin Editor constructor
+        const editor = new Editor({
+          view: view,
+          layerInfos: [pointInfos]
+        }); // End Editor constructor
+
+        // Add the widget to the view
+        view.ui.add(editor, "top-right");
   // ...existing code for widgets...
   // BasemapGallery removed
       const locateWidget = new Locate({ view: view });
